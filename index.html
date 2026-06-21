@@ -11,15 +11,13 @@
         h2 { text-align: center; color: var(--accent); margin-bottom: 20px; font-size: 1.2rem; }
         .row { margin-bottom: 12px; }
         label { font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        input, select { width: 100%; background: #222; border: 1px solid #444; padding: 10px; color: #fff; border-radius: 6px; }
-        select[multiple] { height: 120px; }
-        button { width: 100%; padding: 12px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; margin-top: 8px; }
+        input, select { width: 100%; background: #222; border: 1px solid #444; padding: 10px; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; margin-top: 5px; }
         .btn-add { background: #333; }
         .btn-save { background: var(--accent); color: #000; }
         .btn-wp { background: #25d366; color: white; margin-top: 20px; }
-        #listaMusicas { margin: 15px 0; display: flex; flex-wrap: wrap; gap: 6px; }
-        .badge { background: #2a2a2a; padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; border: 1px solid #444; }
-        .badge:hover { background: #ff4444; }
+        .lista-container { margin: 15px 0; padding: 10px; background: #1a1a1a; border-radius: 6px; }
+        .item-badge { background: #2a2a2a; padding: 5px 10px; border-radius: 4px; margin-bottom: 5px; font-size: 0.8rem; display: flex; justify-content: space-between; border: 1px solid #444; }
     </style>
 </head>
 <body>
@@ -29,20 +27,31 @@
     <div class="row"><label>DATA</label><input type="date" id="data"></div>
     <div class="row"><label>HORÁRIO</label><input type="time" id="horario"></div>
     
-    <!-- Agora permite selecionar vários segurando Ctrl ou clicando -->
-    <div class="row"><label>INTEGRANTES (Selecione vários)</label>
-        <select id="integrantes" multiple>
-            <option>Márcia</option><option>Isabelle</option><option>Estefany</option>
-            <option>Paulinho</option><option>Fernando</option><option>Davi</option><option>Max</option>
-        </select>
+    <div class="row" style="display: flex; gap: 5px;">
+        <div style="flex: 2;">
+            <label>INTEGRANTE</label>
+            <select id="selIntegrante">
+                <option>Márcia</option><option>Isabelle</option><option>Estefany</option>
+                <option>Paulinho</option><option>Fernando</option><option>Davi</option><option>Max</option>
+            </select>
+        </div>
+        <div style="flex: 1;">
+            <label>FUNÇÃO</label>
+            <select id="selFuncao">
+                <option>Cantor(a)</option><option>Backing</option><option>Guitarra</option>
+                <option>Teclado</option><option>Bateria</option><option>Baixo</option>
+            </select>
+        </div>
     </div>
+    <button class="btn-add" onclick="addPessoa()">+ ADD INTEGRANTE</button>
 
-    <div class="row"><label>SELECIONAR MÚSICA</label>
+    <div id="listaIntegrantes" class="lista-container"></div>
+
+    <div class="row"><label>MÚSICA</label>
         <select id="selectMusica"></select>
-        <button class="btn-add" onclick="addMusica()">+ ADICIONAR MÚSICA</button>
+        <button class="btn-add" onclick="addMusica()">+ ADD MÚSICA</button>
     </div>
-    
-    <div id="listaMusicas"></div>
+    <div id="listaMusicas" class="lista-container"></div>
 
     <button class="btn-save" onclick="salvarEscala()">SALVAR ESCALA</button>
     <button class="btn-wp" onclick="enviarWhatsApp()">ENVIAR VIA WHATSAPP</button>
@@ -51,7 +60,8 @@
 <script>
     const musicas = ["Aos Pés da Cruz", "Oceanos", "Que se Abram os Céus", "Lugar Secreto", "Nada Mais", "Eu Te Vejo em Tudo", "Ousado Amor", "Fenda da Rocha", "Quão Grande é o Meu Deus", "Poderoso Deus", "A Ele a Glória", "Atos 2", "Me Derramar", "Rei do Meu Coração", "Em Teus Braços", "Perto de Ti", "Mais Perto", "Aba", "Só Tu És Santo", "Santo Espírito", "Não Seria Eu", "A Casa é Sua", "Yeshua", "Teus Planos", "Tuas Águas", "Seu Amor é Incrível", "Leão da Tribo de Judá", "Cadeias Quebrar", "Maravilhada Graça", "Ao Único", "Eu Navegarei", "Tua Presença", "Porque Ele Vive", "Grandioso é o Teu Amor", "Isaías 9", "Tudo Que Existe", "Vem me Buscar", "Filho do Deus Vivo", "Eu Me Rendo", "Espontâneo", "Fogo do Céu", "Brasil", "Aleluia", "Cura-me", "Deus de Promessas", "Incomparável", "Lindo És", "Transformado", "Minha Essência", "Como a Flor", "Digno de Glória", "Santo", "Meu Salvador", "Tua Unção", "Renascer", "Liberta-me", "Fiel", "Som da Liberdade", "Rei da Glória", "Ele Vem", "Glória", "Exaltado", "Tua Graça me Basta", "O Caminho", "Verdade e Vida", "Vida em Mim", "Graça", "Livre", "Viver pra Ti", "Tua Vontade", "Tua Palavra", "Esperança", "A Luz do Mundo", "Sal da Terra", "Coração", "Intimidade", "Profundo", "Viverei", "Chamado", "Missionário", "Ide", "Restaurar", "Vidas", "Almas", "Celebração", "Vitória", "Exército de Deus", "Unidade", "Amor", "Paz", "Felicidade", "Novo Tempo", "Despertar", "Avivamento", "Glória a Deus", "Reina", "Majestade", "Poder", "Autor da Vida", "Eterno"];
     
-    let musicasSelecionadas = [];
+    let listaPessoas = [];
+    let listaMusicas = [];
 
     window.onload = () => {
         document.getElementById('data').valueAsDate = new Date();
@@ -59,36 +69,41 @@
         musicas.forEach(m => sel.innerHTML += `<option>${m}</option>`);
     };
 
-    function addMusica() {
-        const m = document.getElementById('selectMusica').value;
-        if(!musicasSelecionadas.includes(m)) {
-            musicasSelecionadas.push(m);
-            renderizar();
-        }
-    }
-
-    function renderizar() {
-        const div = document.getElementById('listaMusicas');
-        div.innerHTML = "";
-        musicasSelecionadas.forEach((m, i) => {
-            div.innerHTML += `<span class="badge" onclick="remover(${i})">${m} ✕</span>`;
-        });
-    }
-
-    function remover(i) {
-        musicasSelecionadas.splice(i, 1);
+    function addPessoa() {
+        const nome = document.getElementById('selIntegrante').value;
+        const func = document.getElementById('selFuncao').value;
+        listaPessoas.push({nome, func});
         renderizar();
     }
 
+    function addMusica() {
+        const m = document.getElementById('selectMusica').value;
+        if(!listaMusicas.includes(m)) listaMusicas.push(m);
+        renderizar();
+    }
+
+    function renderizar() {
+        const divP = document.getElementById('listaIntegrantes');
+        divP.innerHTML = "<strong>Integrantes:</strong>";
+        listaPessoas.forEach((p, i) => divP.innerHTML += `<div class="item-badge">${p.nome} (${p.func}) <span onclick="remP(${i})">✕</span></div>`);
+
+        const divM = document.getElementById('listaMusicas');
+        divM.innerHTML = "<strong>Músicas:</strong>";
+        listaMusicas.forEach((m, i) => divM.innerHTML += `<div class="item-badge">${m} <span onclick="remM(${i})">✕</span></div>`);
+    }
+
+    function remP(i) { listaPessoas.splice(i, 1); renderizar(); }
+    function remM(i) { listaMusicas.splice(i, 1); renderizar(); }
+
     function salvarEscala() {
-        // Pega todos os selecionados no campo 'integrantes'
-        const selecionados = Array.from(document.getElementById('integrantes').selectedOptions).map(o => o.value);
+        const dataInput = document.getElementById('data').value.split('-');
+        const dataFormatada = `${dataInput[2]}/${dataInput[1]}/${dataInput[0]}`;
         
         const escala = {
-            data: document.getElementById('data').value,
+            data: dataFormatada,
             horario: document.getElementById('horario').value,
-            integrantes: selecionados,
-            musicas: musicasSelecionadas
+            equipe: listaPessoas,
+            musicas: listaMusicas
         };
         localStorage.setItem('escalaAtual', JSON.stringify(escala));
         alert("Escala salva!");
@@ -96,8 +111,9 @@
 
     function enviarWhatsApp() {
         const e = JSON.parse(localStorage.getItem('escalaAtual'));
-        if(!e) return alert("Salve antes de enviar!");
-        const texto = `*ESCALA RENASCER*%0AData: ${e.data}%0AHora: ${e.horario}%0AIntegrantes: ${e.integrantes.join(', ')}%0AMúsicas: ${e.musicas.join(', ')}`;
+        if(!e) return alert("Salve primeiro!");
+        const equipeStr = e.equipe.map(x => `${x.nome} (${x.func})`).join(', ');
+        const texto = `*ESCALA RENASCER*%0AData: ${e.data}%0AHora: ${e.horario}%0AEquipe: ${equipeStr}%0AMúsicas: ${e.musicas.join(', ')}`;
         window.open(`https://wa.me/?text=${texto}`, '_blank');
     }
 </script>
