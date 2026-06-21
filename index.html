@@ -5,19 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escala Renascer | Pro</title>
     <style>
-        :root { --bg: #0a0a0a; --accent: #00f2ff; --card: #141414; --text: #ffffff; }
+        :root { --bg: #0a0a0a; --accent: #00f2ff; --card: #141414; --text: #ffffff; --input-bg: #1e1e1e; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 15px; display: flex; justify-content: center; }
         .card { width: 100%; max-width: 400px; background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; }
         h2 { text-align: center; color: var(--accent); margin-bottom: 20px; font-size: 1.2rem; }
         .row { margin-bottom: 12px; }
-        label { font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        input, select { width: 100%; background: #222; border: 1px solid #444; padding: 10px; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; margin-top: 5px; }
-        .btn-add { background: #333; }
+        label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        input, select { width: 100%; background: var(--input-bg); border: 1px solid #444; padding: 12px; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; margin-top: 5px; transition: 0.2s; }
+        /* Botões mais claros e legíveis */
+        .btn-add { background: #3a3a3a; color: #fff; border: 1px solid #555; }
+        .btn-add:hover { background: #4a4a4a; }
         .btn-save { background: var(--accent); color: #000; }
         .btn-wp { background: #25d366; color: white; margin-top: 20px; }
-        .lista-container { margin: 15px 0; padding: 10px; background: #1a1a1a; border-radius: 6px; }
-        .item-badge { background: #2a2a2a; padding: 5px 10px; border-radius: 4px; margin-bottom: 5px; font-size: 0.8rem; display: flex; justify-content: space-between; border: 1px solid #444; }
+        .lista-container { margin: 15px 0; padding: 10px; background: #1a1a1a; border-radius: 6px; border: 1px solid #2a2a2a; }
+        .item-badge { background: #333; padding: 6px 10px; border-radius: 4px; margin-bottom: 5px; font-size: 0.85rem; display: flex; justify-content: space-between; border: 1px solid #444; }
+        span.remove { cursor: pointer; color: #ff6b6b; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -47,8 +50,10 @@
 
     <div id="listaIntegrantes" class="lista-container"></div>
 
-    <div class="row"><label>MÚSICA</label>
-        <select id="selectMusica"></select>
+    <div class="row">
+        <label>MÚSICA</label>
+        <input type="text" id="inputMusica" list="musicasList" placeholder="Digite ou selecione...">
+        <datalist id="musicasList"></datalist>
         <button class="btn-add" onclick="addMusica()">+ ADD MÚSICA</button>
     </div>
     <div id="listaMusicas" class="lista-container"></div>
@@ -65,8 +70,8 @@
 
     window.onload = () => {
         document.getElementById('data').valueAsDate = new Date();
-        const sel = document.getElementById('selectMusica');
-        musicas.forEach(m => sel.innerHTML += `<option>${m}</option>`);
+        const datalist = document.getElementById('musicasList');
+        musicas.forEach(m => datalist.innerHTML += `<option value="${m}">`);
     };
 
     function addPessoa() {
@@ -77,19 +82,22 @@
     }
 
     function addMusica() {
-        const m = document.getElementById('selectMusica').value;
-        if(!listaMusicas.includes(m)) listaMusicas.push(m);
-        renderizar();
+        const input = document.getElementById('inputMusica');
+        if(input.value && !listaMusicas.includes(input.value)) {
+            listaMusicas.push(input.value);
+            input.value = "";
+            renderizar();
+        }
     }
 
     function renderizar() {
         const divP = document.getElementById('listaIntegrantes');
         divP.innerHTML = "<strong>Integrantes:</strong>";
-        listaPessoas.forEach((p, i) => divP.innerHTML += `<div class="item-badge">${p.nome} (${p.func}) <span onclick="remP(${i})">✕</span></div>`);
+        listaPessoas.forEach((p, i) => divP.innerHTML += `<div class="item-badge">${p.nome} (${p.func}) <span class="remove" onclick="remP(${i})">✕</span></div>`);
 
         const divM = document.getElementById('listaMusicas');
         divM.innerHTML = "<strong>Músicas:</strong>";
-        listaMusicas.forEach((m, i) => divM.innerHTML += `<div class="item-badge">${m} <span onclick="remM(${i})">✕</span></div>`);
+        listaMusicas.forEach((m, i) => divM.innerHTML += `<div class="item-badge">${m} <span class="remove" onclick="remM(${i})">✕</span></div>`);
     }
 
     function remP(i) { listaPessoas.splice(i, 1); renderizar(); }
@@ -97,7 +105,7 @@
 
     function salvarEscala() {
         const dataInput = document.getElementById('data').value.split('-');
-        const dataFormatada = `${dataInput[2]}/${dataInput[1]}/${dataInput[0]}`;
+        const dataFormatada = dataInput.length === 3 ? `${dataInput[2]}/${dataInput[1]}/${dataInput[0]}` : document.getElementById('data').value;
         
         const escala = {
             data: dataFormatada,
