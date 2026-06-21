@@ -14,7 +14,9 @@
         .btn-add { background: #222; color: white; }
         .btn-save { background: var(--accent); color: #000; }
         .btn-wp { background: #25d366; color: white; margin-top: 20px; }
-        #listaMusicas { font-size: 0.8rem; margin: 10px 0; color: var(--accent); }
+        #listaMusicas { font-size: 0.8rem; margin: 15px 0; color: #aaa; }
+        .badge { display: inline-block; background: #333; padding: 3px 8px; margin: 2px; border-radius: 4px; cursor: pointer; color: var(--accent); }
+        .badge:hover { background: #444; text-decoration: line-through; }
     </style>
 </head>
 <body>
@@ -34,7 +36,8 @@
             <option>Guitarrista</option><option>Tecladista</option><option>Baterista</option><option>Baixista</option>
         </select>
     </div>
-    <div class="row"><label>MÚSICA</label><input type="text" id="inputMusica">
+    <div class="row"><label>SELECIONAR MÚSICA</label>
+        <select id="selectMusica"></select>
         <button class="btn-add" onclick="addMusica()">+ ADICIONAR MÚSICA</button>
     </div>
     
@@ -45,42 +48,21 @@
 </div>
 
 <script>
-    let musicasTemporarias = [];
-
-    function addMusica() {
-        const m = document.getElementById('inputMusica');
-        if(m.value) {
-            musicasTemporarias.push(m.value);
-            document.getElementById('listaMusicas').innerHTML = `Músicas: ${musicasTemporarias.join(', ')}`;
-            m.value = '';
-        }
-    }
-
-    function salvarEscala() {
-        const escala = {
-            data: document.getElementById('data').value,
-            horario: document.getElementById('horario').value,
-            integrante: document.getElementById('integrante').value,
-            funcao: document.getElementById('funcao').value,
-            musicas: musicasTemporarias
-        };
-        localStorage.setItem('escalaAtual', JSON.stringify(escala));
-        alert("Escala salva localmente!");
-    }
-
-    function enviarWhatsApp() {
-        const escala = JSON.parse(localStorage.getItem('escalaAtual'));
-        if(!escala) return alert("Salve a escala primeiro!");
-        
-        const texto = `*ESCALA RENASCER*%0A` +
-                      `Data: ${escala.data}%0A` +
-                      `Horário: ${escala.horario}%0A` +
-                      `Integrante: ${escala.integrante}%0A` +
-                      `Função: ${escala.funcao}%0A` +
-                      `Músicas: ${escala.musicas.join(', ')}`;
-        
-        window.open(`https://wa.me/?text=${texto}`, '_blank');
-    }
-</script>
-</body>
-</html>
+    const musicasRenascer = [
+        "Aos Pés da Cruz", "Oceanos", "Que se Abram os Céus", "Lugar Secreto", "Nada Mais", 
+        "Eu Te Vejo em Tudo", "Ousado Amor", "Fenda da Rocha", "Quão Grande é o Meu Deus", "Poderoso Deus",
+        "A Ele a Glória", "Atos 2", "Me Derramar", "Rei do Meu Coração", "Em Teus Braços",
+        "Perto de Ti", "Mais Perto", "Aba", "Só Tu És Santo", "Santo Espírito",
+        "Não Seria Eu", "A Casa é Sua", "Yeshua", "Teus Planos", "Tuas Águas",
+        "Seu Amor é Incrível", "Leão da Tribo de Judá", "Cadeias Quebrar", "Maravilhada Graça", "Ao Único",
+        "Eu Navegarei", "Tua Presença", "Porque Ele Vive", "Grandioso é o Teu Amor", "Isaías 9",
+        "Tudo Que Existe", "Vem me Buscar", "Filho do Deus Vivo", "Eu Me Rendo", "Espontâneo",
+        "Fogo do Céu", "Brasil", "Aleluia", "Cura-me", "Deus de Promessas",
+        "Incomparável", "Lindo És", "Transformado", "Minha Essência", "Como a Flor",
+        "Digno de Glória", "Santo", "Meu Salvador", "Tua Unção", "Renascer",
+        "Liberta-me", "Fiel", "Som da Liberdade", "Rei da Glória", "Ele Vem",
+        "Glória", "Exaltado", "Tua Graça me Basta", "O Caminho", "Verdade e Vida",
+        "Vida em Mim", "Graça", "Livre", "Viver pra Ti", "Tua Vontade",
+        "Tua Palavra", "Esperança", "A Luz do Mundo", "Sal da Terra", "Coração",
+        "Intimidade", "Profundo", "Viverei", "Chamado", "Missionário",
+        "Ide
