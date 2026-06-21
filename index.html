@@ -2,63 +2,121 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Escala Renascer - Completo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala Renascer - Cadastro</title>
     <style>
-        body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         h1 { color: #2c3e50; text-align: center; }
+        label { font-weight: bold; margin-top: 10px; display: block; color: #555; }
         input, select { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background-color: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; }
-        .btn-sec { background-color: #3498db; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; font-size: 14px; }
-        .hidden { display: none; }
+        button { width: 100%; padding: 15px; background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #219150; }
+        
+        /* Estilos da tabela (mantendo o padrão visual) */
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #2c3e50; color: white; }
+        .btn-limpar { background-color: #e74c3c; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container" id="telaCadastro">
-    <h1>Cadastrar Ensaio</h1>
+<div class="container">
+    <h1>Escala Renascer</h1>
+    
+    <label>Data do Ensaio</label>
     <input type="date" id="data">
+    
+    <label>Horário</label>
     <input type="time" id="horario">
+    
+    <label>Música</label>
     <input type="text" id="musica" placeholder="Nome da música">
+    
+    <label>Autor</label>
+    <input type="text" id="autor" placeholder="Nome do autor">
+    
+    <label>Tom</label>
+    <input type="text" id="tom" placeholder="Ex: Sol Maior">
+    
+    <label>Integrante</label>
     <input type="text" id="integrante" placeholder="Nome do membro">
+    
+    <label>Função</label>
     <select id="funcao">
         <option value="Tecladista">Tecladista</option>
         <option value="Baterista">Baterista</option>
         <option value="Vocalista">Vocalista</option>
+        <option value="Baixista">Baixista</option>
+        <option value="Guitarrista">Guitarrista</option>
+        <option value="Violonista">Violonista</option>
+        <option value="Backing vocal">Backing vocal</option>
     </select>
-    <button onclick="registrar()">Salvar Ensaio</button>
-    <button class="btn-sec" onclick="alternarTela()">Ver Histórico</button>
-</div>
 
-<div class="container hidden" id="telaHistorico">
-    <h1>Histórico</h1>
-    <input type="text" id="busca" placeholder="Buscar música..." onkeyup="filtrar()">
+    <button onclick="registrar()">Cadastrar na Escala</button>
+
+    <hr style="margin: 30px 0;">
+
+    <h2>Histórico de Músicas</h2>
+    <input type="text" id="filtro" placeholder="Buscar música..." onkeyup="filtrar()">
     <table id="tabela">
-        <thead><tr><th>Data</th><th>Música</th><th>Membro</th></tr></thead>
+        <thead>
+            <tr><th>Data</th><th>Música</th><th>Integrante</th></tr>
+        </thead>
         <tbody id="corpoTabela"></tbody>
     </table>
-    <button class="btn-sec" onclick="alternarTela()">Voltar ao Cadastro</button>
-    <button style="background:#e74c3c; margin-top:10px" onclick="limparTudo()">Limpar Tudo</button>
+    <button class="btn-limpar" onclick="limparTudo()">Limpar Tudo</button>
 </div>
 
 <script>
-    function alternarTela() {
-        document.getElementById('telaCadastro').classList.toggle('hidden');
-        document.getElementById('telaHistorico').classList.toggle('hidden');
-        carregarTabela();
-    }
-
     function registrar() {
-        const novo = {
+        const novoEnsaio = {
             data: document.getElementById('data').value,
+            horario: document.getElementById('horario').value,
             musica: document.getElementById('musica').value,
+            autor: document.getElementById('autor').value,
+            tom: document.getElementById('tom').value,
             nome: document.getElementById('integrante').value,
             funcao: document.getElementById('funcao').value
         };
+
+        if(!novoEnsaio.data || !novoEnsaio.musica || !novoEnsaio.nome) {
+            alert("Por favor, preencha os campos principais!");
+            return;
+        }
+
         let banco = JSON.parse(localStorage.getItem('bancoEscala')) || [];
-        banco.push(novo);
+        banco.push(novoEnsaio);
         localStorage.setItem('bancoEscala', JSON.stringify(banco));
-        alert("Salvo!");
+        
+        alert("Ensaio registrado!");
+        carregarTabela();
     }
+
+    function carregarTabela() {
+        const banco = JSON.parse(localStorage.getItem('bancoEscala')) || [];
+        const corpo = document.getElementById('corpoTabela');
+        corpo.innerHTML = banco.map(i => `<tr><td>${i.data}</td><td>${i.musica}</td><td>${i.nome}</td></tr>`).join('');
+    }
+
+    function filtrar() {
+        const termo = document.getElementById('filtro').value.toLowerCase();
+        const linhas = document.querySelectorAll('#corpoTabela tr');
+        linhas.forEach(tr => {
+            tr.style.display = tr.innerText.toLowerCase().includes(termo) ? '' : 'none';
+        });
+    }
+
+    function limparTudo() {
+        if(confirm("Apagar todo o histórico?")) {
+            localStorage.removeItem('bancoEscala');
+            carregarTabela();
+        }
+    }
+
+    // Carrega a tabela ao abrir
+    carregarTabela();
+</script>
+</body>
+</html>
