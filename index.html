@@ -2,96 +2,100 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Escala Rápida Renascer</title>
+    <title>Escala Pro | Renascer</title>
     <style>
         :root { --accent: #00f2ff; --bg: #121212; }
         body { background: var(--bg); color: #fff; font-family: sans-serif; padding: 15px; }
-        .musica-input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; margin-bottom: 20px; }
-        .grid-container { display: grid; grid-template-columns: 100px 1fr; gap: 10px; margin-bottom: 20px; }
-        .integrante-nome { font-weight: bold; align-self: center; font-size: 0.85rem; }
+        .musica-input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; margin-bottom: 20px; }
+        .grid-container { display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: center; margin-bottom: 20px; }
+        .integrante-nome { font-weight: bold; font-size: 0.8rem; }
         .selecao-funcao { display: flex; gap: 5px; flex-wrap: wrap; }
-        .chip { padding: 6px 10px; border: 1px solid #444; border-radius: 4px; cursor: pointer; font-size: 0.7rem; background: #222; }
-        .chip.active { background: var(--accent); color: #000; font-weight: bold; }
-        .actions { display: flex; gap: 10px; }
-        button { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .chip { padding: 6px 8px; border: 1px solid #444; border-radius: 4px; cursor: pointer; font-size: 0.7rem; background: #222; transition: 0.2s; }
+        .chip.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
+        .actions { display: flex; gap: 10px; margin-top: 20px; }
+        button { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
         .btn-limpar { background: #444; color: #fff; }
         .btn-enviar { background: #25d366; color: #000; }
-        #resumo { margin-top: 20px; padding: 15px; background: #1a1a1a; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
 <h3>𝄞 ESCOLHER MÚSICA</h3>
-<input type="text" id="musicaAtual" class="musica-input" list="musicasList" placeholder="Digite a música e defina a equipe abaixo...">
+<input type="text" id="musicaAtual" class="musica-input" list="musicasList" placeholder="Digite a música e defina..." oninput="carregarConfiguracao()">
 <datalist id="musicasList"></datalist>
 
 <div id="grid" class="grid-container"></div>
 
 <div class="actions">
     <button class="btn-limpar" onclick="limparTudo()">LIMPAR TUDO</button>
-    <button class="btn-enviar" onclick="enviarWhatsApp()">ENVIAR NO WHATSAPP</button>
-</div>
-
-<div id="resumo">
-    <strong>Músicas configuradas:</strong>
-    <div id="listaResumo" style="margin-top: 10px;">Nenhuma música configurada ainda.</div>
+    <button class="btn-enviar" onclick="enviarWhatsApp()">ENVIAR (WhatsApp)</button>
 </div>
 
 <script>
     const integrantes = ["Márcia", "Isabelle", "Estefany", "Paulinho", "Fernando", "Davi", "Max"];
     const funcoes = ["Cantor(a)", "Backing-vocal", "Guitarra", "Baixo", "Bateria", "Teclado"];
-    const musicasBase = ["Ousado Amor", "Galileu", "Vem me Buscar", "Aos Pés da Cruz", "Oceanos", "Que se Abram os Céus"];
     
+    // Dados: dadosEscala[musica][integrante] = [funcao1, funcao2]
     let dadosEscala = {};
 
-    // Inicialização
     const grid = document.getElementById('grid');
-    const datalist = document.getElementById('musicasList');
-    musicasBase.forEach(m => datalist.innerHTML += `<option value="${m}">`);
-
     integrantes.forEach(nome => {
         grid.innerHTML += `<div class="integrante-nome">${nome}</div>`;
         let htmlFuncoes = `<div class="selecao-funcao" id="funcoes-${nome}">`;
         funcoes.forEach(f => {
-            htmlFuncoes += `<div class="chip" onclick="selecionar('${nome}', '${f}', this)">${f}</div>`;
+            htmlFuncoes += `<div class="chip" onclick="toggleSelecao('${nome}', '${f}', this)">${f}</div>`;
         });
         htmlFuncoes += `</div>`;
         grid.innerHTML += htmlFuncoes;
     });
 
-    function selecionar(nome, func, el) {
+    function toggleSelecao(nome, func, el) {
         const musica = document.getElementById('musicaAtual').value;
-        if(!musica) return alert("Por favor, digite o nome da música primeiro!");
-        
-        el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
+        if(!musica) return alert("Digite o nome da música primeiro!");
 
         if(!dadosEscala[musica]) dadosEscala[musica] = {};
-        dadosEscala[musica][nome] = func;
-        atualizarResumo();
+        if(!dadosEscala[musica][nome]) dadosEscala[musica][nome] = [];
+
+        const index = dadosEscala[musica][nome].indexOf(func);
+        if(index > -1) {
+            dadosEscala[musica][nome].splice(index, 1);
+            el.classList.remove('active');
+        } else {
+            dadosEscala[musica][nome].push(func);
+            el.classList.add('active');
+        }
     }
 
-    function atualizarResumo() {
-        const listaResumo = document.getElementById('listaResumo');
-        listaResumo.innerHTML = Object.keys(dadosEscala).map(m => `• ${m}`).join('<br>');
+    function carregarConfiguracao() {
+        const musica = document.getElementById('musicaAtual').value;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+
+        if(dadosEscala[musica]) {
+            for(let nome in dadosEscala[musica]) {
+                const funcoesAtivas = dadosEscala[musica][nome];
+                funcoesAtivas.forEach(func => {
+                    const el = document.querySelector(`#funcoes-${nome} .chip:nth-child(${funcoes.indexOf(func) + 1})`);
+                    if(el) el.classList.add('active');
+                });
+            }
+        }
     }
 
     function limparTudo() {
-        if(confirm("Deseja limpar toda a escala?")) {
+        if(confirm("Limpar toda a escala?")) {
             dadosEscala = {};
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            atualizarResumo();
         }
     }
 
     function enviarWhatsApp() {
-        if(Object.keys(dadosEscala).length === 0) return alert("Adicione pelo menos uma música!");
-        
         let msg = `*𝄞 ESCALA RENASCER*%0A%0A`;
         for(let m in dadosEscala) {
             msg += `*${m}*%0A`;
             for(let p in dadosEscala[m]) {
-                msg += `→ ${p}: ${dadosEscala[m][p]}%0A`;
+                if(dadosEscala[m][p].length > 0) {
+                    msg += `→ ${p}: ${dadosEscala[m][p].join(', ')}%0A`;
+                }
             }
             msg += `%0A`;
         }
