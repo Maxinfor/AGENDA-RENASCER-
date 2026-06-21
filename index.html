@@ -2,26 +2,34 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escala Pro | Renascer</title>
     <style>
         :root { --accent: #00f2ff; --bg: #121212; }
         body { background: var(--bg); color: #fff; font-family: sans-serif; padding: 15px; }
-        .musica-input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; margin-bottom: 20px; }
-        .grid-container { display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: center; margin-bottom: 20px; }
-        .integrante-nome { font-weight: bold; font-size: 0.8rem; }
+        .musica-input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; margin-bottom: 15px; box-sizing: border-box; }
+        
+        /* Grade adaptável */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .item-row { background: #1a1a1a; padding: 10px; border-radius: 8px; border: 1px solid #333; }
+        .integrante-nome { font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; color: var(--accent); }
         .selecao-funcao { display: flex; gap: 5px; flex-wrap: wrap; }
-        .chip { padding: 6px 8px; border: 1px solid #444; border-radius: 4px; cursor: pointer; font-size: 0.7rem; background: #222; transition: 0.2s; }
+        .chip { padding: 6px 10px; border: 1px solid #444; border-radius: 4px; cursor: pointer; font-size: 0.75rem; background: #222; }
         .chip.active { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
-        .actions { display: flex; gap: 10px; margin-top: 20px; }
-        button { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        
+        .actions { display: flex; gap: 10px; margin-bottom: 20px; }
+        button { padding: 10px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
         .btn-limpar { background: #444; color: #fff; }
         .btn-enviar { background: #25d366; color: #000; }
+        
+        /* Lista de resumo devolvida */
+        #resumo { background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
 <h3>𝄞 ESCOLHER MÚSICA</h3>
-<input type="text" id="musicaAtual" class="musica-input" list="musicasList" placeholder="Digite a música e defina..." oninput="carregarConfiguracao()">
+<input type="text" id="musicaAtual" class="musica-input" list="musicasList" placeholder="Digite ou selecione a música..." oninput="carregarConfiguracao()">
 <datalist id="musicasList"></datalist>
 
 <div id="grid" class="grid-container"></div>
@@ -31,22 +39,25 @@
     <button class="btn-enviar" onclick="enviarWhatsApp()">ENVIAR (WhatsApp)</button>
 </div>
 
+<div id="resumo">
+    <strong>Músicas configuradas:</strong>
+    <div id="listaResumo" style="margin-top: 10px; line-height: 1.6;">Nenhuma música configurada ainda.</div>
+</div>
+
 <script>
     const integrantes = ["Márcia", "Isabelle", "Estefany", "Paulinho", "Fernando", "Davi", "Max"];
     const funcoes = ["Cantor(a)", "Backing-vocal", "Guitarra", "Baixo", "Bateria", "Teclado"];
-    
-    // Dados: dadosEscala[musica][integrante] = [funcao1, funcao2]
     let dadosEscala = {};
 
     const grid = document.getElementById('grid');
     integrantes.forEach(nome => {
-        grid.innerHTML += `<div class="integrante-nome">${nome}</div>`;
-        let htmlFuncoes = `<div class="selecao-funcao" id="funcoes-${nome}">`;
-        funcoes.forEach(f => {
-            htmlFuncoes += `<div class="chip" onclick="toggleSelecao('${nome}', '${f}', this)">${f}</div>`;
-        });
-        htmlFuncoes += `</div>`;
-        grid.innerHTML += htmlFuncoes;
+        grid.innerHTML += `
+            <div class="item-row">
+                <div class="integrante-nome">${nome}</div>
+                <div class="selecao-funcao" id="funcoes-${nome}">
+                    ${funcoes.map(f => `<div class="chip" onclick="toggleSelecao('${nome}', '${f}', this)">${f}</div>`).join('')}
+                </div>
+            </div>`;
     });
 
     function toggleSelecao(nome, func, el) {
@@ -56,14 +67,15 @@
         if(!dadosEscala[musica]) dadosEscala[musica] = {};
         if(!dadosEscala[musica][nome]) dadosEscala[musica][nome] = [];
 
-        const index = dadosEscala[musica][nome].indexOf(func);
-        if(index > -1) {
-            dadosEscala[musica][nome].splice(index, 1);
+        const idx = dadosEscala[musica][nome].indexOf(func);
+        if(idx > -1) {
+            dadosEscala[musica][nome].splice(idx, 1);
             el.classList.remove('active');
         } else {
             dadosEscala[musica][nome].push(func);
             el.classList.add('active');
         }
+        atualizarResumo();
     }
 
     function carregarConfiguracao() {
@@ -72,8 +84,7 @@
 
         if(dadosEscala[musica]) {
             for(let nome in dadosEscala[musica]) {
-                const funcoesAtivas = dadosEscala[musica][nome];
-                funcoesAtivas.forEach(func => {
+                dadosEscala[musica][nome].forEach(func => {
                     const el = document.querySelector(`#funcoes-${nome} .chip:nth-child(${funcoes.indexOf(func) + 1})`);
                     if(el) el.classList.add('active');
                 });
@@ -81,21 +92,28 @@
         }
     }
 
+    function atualizarResumo() {
+        const lista = document.getElementById('listaResumo');
+        const musicas = Object.keys(dadosEscala);
+        lista.innerHTML = musicas.length > 0 ? musicas.map(m => `• <b>${m}</b>`).join('<br>') : "Nenhuma música configurada.";
+    }
+
     function limparTudo() {
         if(confirm("Limpar toda a escala?")) {
             dadosEscala = {};
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            atualizarResumo();
+            document.getElementById('musicaAtual').value = "";
         }
     }
 
     function enviarWhatsApp() {
+        if(Object.keys(dadosEscala).length === 0) return alert("Adicione músicas!");
         let msg = `*𝄞 ESCALA RENASCER*%0A%0A`;
         for(let m in dadosEscala) {
             msg += `*${m}*%0A`;
             for(let p in dadosEscala[m]) {
-                if(dadosEscala[m][p].length > 0) {
-                    msg += `→ ${p}: ${dadosEscala[m][p].join(', ')}%0A`;
-                }
+                if(dadosEscala[m][p].length > 0) msg += `→ ${p}: ${dadosEscala[m][p].join(', ')}%0A`;
             }
             msg += `%0A`;
         }
