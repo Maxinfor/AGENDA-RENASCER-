@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escala Renascer | Pro</title>
+    <!-- Ícone para identificar no celular -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>𝄞</text></svg>">
     <style>
         :root { --bg: #0a0a0a; --accent: #00f2ff; --card: #141414; --text: #ffffff; --input-bg: #1e1e1e; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 15px; display: flex; justify-content: center; }
         .card { width: 100%; max-width: 400px; background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; }
-        h2 { text-align: center; color: var(--accent); margin-bottom: 20px; font-size: 1.2rem; }
+        h2 { text-align: center; color: var(--accent); margin-bottom: 20px; font-size: 1.3rem; letter-spacing: 1px; }
         .row { margin-bottom: 12px; }
         label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; margin-bottom: 4px; display: block; }
         input, select { width: 100%; background: var(--input-bg); border: 1px solid #444; padding: 12px; color: #fff; border-radius: 6px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; margin-top: 5px; transition: 0.2s; }
-        /* Botões mais claros e legíveis */
         .btn-add { background: #3a3a3a; color: #fff; border: 1px solid #555; }
         .btn-add:hover { background: #4a4a4a; }
         .btn-save { background: var(--accent); color: #000; }
@@ -26,7 +27,8 @@
 <body>
 
 <div class="card">
-    <h2>ESCALA RENASCER</h2>
+    <!-- Adicionada Clave de Sol ao título -->
+    <h2>𝄞 ESCALA RENASCER</h2>
     <div class="row"><label>DATA</label><input type="date" id="data"></div>
     <div class="row"><label>HORÁRIO</label><input type="time" id="horario"></div>
     
@@ -121,7 +123,7 @@
         const e = JSON.parse(localStorage.getItem('escalaAtual'));
         if(!e) return alert("Salve primeiro!");
         const equipeStr = e.equipe.map(x => `${x.nome} (${x.func})`).join(', ');
-        const texto = `*ESCALA RENASCER*%0AData: ${e.data}%0AHora: ${e.horario}%0AEquipe: ${equipeStr}%0AMúsicas: ${e.musicas.join(', ')}`;
+        const texto = `*𝄞 ESCALA RENASCER*%0AData: ${e.data}%0AHora: ${e.horario}%0AEquipe: ${equipeStr}%0AMúsicas: ${e.musicas.join(', ')}`;
         window.open(`https://wa.me/?text=${texto}`, '_blank');
     }
 </script>
