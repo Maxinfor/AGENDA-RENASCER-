@@ -9,22 +9,21 @@
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 15px; display: flex; justify-content: center; }
         .card { width: 100%; max-width: 400px; background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; }
         h2 { text-align: center; color: var(--accent); margin-bottom: 20px; }
-        .row { margin-bottom: 12px; }
+        .row { margin-bottom: 15px; }
         label { font-size: 0.7rem; color: #aaa; text-transform: uppercase; margin-bottom: 4px; display: block; }
         select, input { width: 100%; background: #1e1e1e; border: 1px solid #444; padding: 10px; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; margin-top: 10px; }
+        button { width: 100%; padding: 12px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; margin-top: 5px; }
         .btn-add { background: #333; color: white; border: 1px solid #555; }
-        .btn-wp { background: #25d366; color: white; margin-top: 20px; }
-        .item-card { background: #1a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--accent); }
-        .item-text { font-size: 0.9rem; margin: 2px 0; }
-        .remove { float: right; color: #ff6b6b; cursor: pointer; font-weight: bold; }
+        .btn-wp { background: #25d366; color: #000; margin-top: 20px; }
+        .item-card { background: #1a1a1a; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--accent); }
+        .remove { float: right; color: #ff6b6b; cursor: pointer; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <div class="card">
     <h2>𝄞 ESCALA RENASCER</h2>
-    <div class="row"><label>DATA</label><input type="date" id="data"></div>
+    <div class="row"><label>DATA</label><input type="date" id="data" value="2026-06-21"></div>
     
     <div class="row">
         <label>INTEGRANTE</label>
@@ -42,7 +41,8 @@
     </div>
     <div class="row">
         <label>MÚSICA</label>
-        <input type="text" id="inputMusica" placeholder="Ex: Galileu">
+        <input type="text" id="inputMusica" list="musicasList" placeholder="Selecione ou digite a música">
+        <datalist id="musicasList"></datalist>
     </div>
     <button class="btn-add" onclick="addItem()">+ ADICIONAR À ESCALA</button>
 
@@ -52,27 +52,35 @@
 </div>
 
 <script>
+    const musicas = ["Aos Pés da Cruz", "Oceanos", "Que se Abram os Céus", "Lugar Secreto", "Nada Mais", "Eu Te Vejo em Tudo", "Ousado Amor", "Fenda da Rocha", "Quão Grande é o Meu Deus", "Poderoso Deus", "A Ele a Glória", "Atos 2", "Me Derramar", "Rei do Meu Coração", "Em Teus Braços", "Perto de Ti", "Mais Perto", "Aba", "Só Tu És Santo", "Santo Espírito", "Não Seria Eu", "A Casa é Sua", "Yeshua", "Teus Planos", "Tuas Águas", "Seu Amor é Incrível", "Leão da Tribo de Judá", "Cadeias Quebrar", "Maravilhada Graça", "Ao Único", "Eu Navegarei", "Tua Presença", "Porque Ele Vive", "Grandioso é o Teu Amor", "Isaías 9", "Tudo Que Existe", "Vem me Buscar", "Filho do Deus Vivo", "Eu Me Rendo", "Espontâneo", "Fogo do Céu", "Brasil", "Aleluia", "Cura-me", "Deus de Promessas", "Incomparável", "Lindo És", "Transformado", "Minha Essência", "Como a Flor", "Digno de Glória", "Santo", "Meu Salvador", "Tua Unção", "Renascer", "Liberta-me", "Fiel", "Som da Liberdade", "Rei da Glória", "Ele Vem", "Glória", "Exaltado", "Tua Graça me Basta", "O Caminho", "Verdade e Vida", "Vida em Mim", "Graça", "Livre", "Viver pra Ti", "Tua Vontade", "Tua Palavra", "Esperança", "A Luz do Mundo", "Sal da Terra", "Coração", "Intimidade", "Profundo", "Viverei", "Chamado", "Missionário", "Ide", "Restaurar", "Vidas", "Almas", "Celebração", "Vitória", "Exército de Deus", "Unidade", "Amor", "Paz", "Felicidade", "Novo Tempo", "Despertar", "Avivamento", "Glória a Deus", "Reina", "Majestade", "Poder", "Autor da Vida", "Eterno", "Galileu"];
+    
     let escala = [];
+
+    window.onload = () => {
+        const datalist = document.getElementById('musicasList');
+        musicas.sort().forEach(m => datalist.innerHTML += `<option value="${m}">`);
+    };
 
     function addItem() {
         const int = document.getElementById('selInt').value;
         const func = document.getElementById('selFunc').value;
         const mus = document.getElementById('inputMusica').value;
-        if(!mus) return alert("Digite a música!");
+        if(!mus) return alert("Por favor, escolha uma música.");
         
         escala.push({int, func, mus});
+        document.getElementById('inputMusica').value = "";
         renderizar();
     }
 
     function renderizar() {
         const div = document.getElementById('lista');
-        div.innerHTML = "<strong>Escala Detalhada:</strong><br><br>";
+        div.innerHTML = "<strong>Escala Montada:</strong><br><br>";
         escala.forEach((item, i) => {
             div.innerHTML += `
                 <div class="item-card">
                     <span class="remove" onclick="remover(${i})">✕</span>
-                    <div class="item-text" style="color: var(--accent)">${item.mus.toUpperCase()}</div>
-                    <div class="item-text"><strong>${item.int}</strong> – ${item.func}</div>
+                    <div style="font-size: 0.8rem; color: #888;">Música: ${item.mus}</div>
+                    <div style="font-size: 1rem;"><strong>${item.int}</strong> – <i>${item.func}</i></div>
                 </div>`;
         });
     }
@@ -82,8 +90,14 @@
     function enviarWhatsApp() {
         let data = document.getElementById('data').value;
         let msg = `*𝄞 ESCALA RENASCER*%0AData: ${data}%0A%0A`;
-        escala.forEach(x => {
-            msg += `*${x.mus}*%0A• ${x.int}: ${x.func}%0A%0A`;
+        // Agrupar por música para ficar mais bonito
+        let musicasUnicas = [...new Set(escala.map(x => x.mus))];
+        musicasUnicas.forEach(m => {
+            msg += `*${m}*%0A`;
+            escala.filter(x => x.mus === m).forEach(item => {
+                msg += `• ${item.int} (${item.func})%0A`;
+            });
+            msg += `%0A`;
         });
         window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
