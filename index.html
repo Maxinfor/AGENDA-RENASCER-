@@ -3,16 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escala Renascer - Cadastro</title>
+    <title>Escala Renascer - Profissional</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; padding: 20px; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; text-align: center; }
-        label { font-weight: bold; margin-top: 10px; display: block; color: #555; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #219150; }
-        .link-nav { display: block; text-align: center; margin-top: 20px; color: #3498db; text-decoration: none; font-weight: bold; }
+        :root {
+            --primary: #2c3e50;
+            --accent: #27ae60;
+            --bg: #f4f7f6;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 450px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        h1 { color: var(--primary); text-align: center; margin-bottom: 25px; font-weight: 600; }
+        label { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 5px; display: block; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 20px; border: 1.5px solid #edf1f0; border-radius: 10px; box-sizing: border-box; background: #fafafa; transition: 0.3s; }
+        input:focus { border-color: var(--accent); outline: none; background: white; }
+        button { width: 100%; padding: 14px; background-color: var(--accent); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #219150; transform: translateY(-2px); }
+        .link-nav { display: block; text-align: center; margin-top: 20px; color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 600; opacity: 0.7; }
+        .link-nav:hover { opacity: 1; }
     </style>
 </head>
 <body>
@@ -20,7 +27,7 @@
 <div class="container">
     <h1>Escala Renascer</h1>
     
-    <label>Data do Ensaio</label>
+    <label>Data</label>
     <input type="date" id="data">
     
     <label>Horário</label>
@@ -28,9 +35,6 @@
     
     <label>Música</label>
     <input type="text" id="musica" placeholder="Nome da música">
-    
-    <label>Autor</label>
-    <input type="text" id="autor" placeholder="Nome do autor">
     
     <label>Tom</label>
     <input type="text" id="tom" placeholder="Ex: Sol Maior">
@@ -50,7 +54,7 @@
     </select>
 
     <button onclick="registrar()">Cadastrar na Escala</button>
-    <a href="historico.html" class="link-nav">Ver Banco de Dados (Histórico)</a>
+    <a href="historico.html" class="link-nav">Ver Histórico de Ensaios</a>
 </div>
 
 <script>
@@ -60,14 +64,13 @@
             data: document.getElementById('data').value,
             horario: document.getElementById('horario').value,
             musica: document.getElementById('musica').value,
-            autor: document.getElementById('autor').value,
             tom: document.getElementById('tom').value,
             nome: document.getElementById('integrante').value,
             funcao: document.getElementById('funcao').value
         };
 
         if(!novoEnsaio.data || !novoEnsaio.musica || !novoEnsaio.nome) {
-            alert("Por favor, preencha os campos principais!");
+            alert("Por favor, preencha os campos obrigatórios.");
             return;
         }
 
@@ -76,6 +79,10 @@
         localStorage.setItem('bancoEscala', JSON.stringify(banco));
         
         alert("Ensaio registrado com sucesso!");
+        
+        // Limpa apenas os campos de entrada, mantendo a função selecionada
+        document.getElementById('musica').value = '';
+        document.getElementById('tom').value = '';
         document.getElementById('integrante').value = '';
     }
 </script>
