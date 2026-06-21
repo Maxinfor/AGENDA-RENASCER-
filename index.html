@@ -4,37 +4,51 @@
     <meta charset="UTF-8">
     <title>Escala Rápida Renascer</title>
     <style>
-        body { background: #121212; color: #fff; font-family: sans-serif; padding: 10px; }
-        .grid-container { display: grid; grid-template-columns: 120px 1fr; gap: 10px; }
-        .integrante-nome { font-weight: bold; align-self: center; }
+        :root { --accent: #00f2ff; --bg: #121212; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; padding: 15px; }
+        .musica-input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; margin-bottom: 20px; }
+        .grid-container { display: grid; grid-template-columns: 100px 1fr; gap: 10px; margin-bottom: 20px; }
+        .integrante-nome { font-weight: bold; align-self: center; font-size: 0.85rem; }
         .selecao-funcao { display: flex; gap: 5px; flex-wrap: wrap; }
-        .chip { padding: 8px; border: 1px solid #444; border-radius: 5px; cursor: pointer; font-size: 0.7rem; background: #222; }
-        .chip.active { background: var(--accent); color: #000; border-color: #fff; }
-        :root { --accent: #00f2ff; }
-        button { width: 100%; padding: 15px; margin-top: 20px; background: #25d366; border: none; border-radius: 8px; font-weight: bold; }
+        .chip { padding: 6px 10px; border: 1px solid #444; border-radius: 4px; cursor: pointer; font-size: 0.7rem; background: #222; }
+        .chip.active { background: var(--accent); color: #000; font-weight: bold; }
+        .actions { display: flex; gap: 10px; }
+        button { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-limpar { background: #444; color: #fff; }
+        .btn-enviar { background: #25d366; color: #000; }
+        #resumo { margin-top: 20px; padding: 15px; background: #1a1a1a; border-radius: 8px; font-size: 0.8rem; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
 <h3>𝄞 ESCOLHER MÚSICA</h3>
-<input type="text" id="musicaAtual" list="musicasList" placeholder="Qual música está editando?" style="width:100%; padding:10px;">
+<input type="text" id="musicaAtual" class="musica-input" list="musicasList" placeholder="Digite a música e defina a equipe abaixo...">
 <datalist id="musicasList"></datalist>
 
-<hr>
+<div id="grid" class="grid-container"></div>
 
-<div id="grid" class="grid-container" style="margin-top:20px;">
-    <!-- O script vai gerar os nomes aqui -->
+<div class="actions">
+    <button class="btn-limpar" onclick="limparTudo()">LIMPAR TUDO</button>
+    <button class="btn-enviar" onclick="enviarWhatsApp()">ENVIAR NO WHATSAPP</button>
 </div>
 
-<button onclick="salvarEEnviar()">ENVIAR ESCALA NO WHATSAPP</button>
+<div id="resumo">
+    <strong>Músicas configuradas:</strong>
+    <div id="listaResumo" style="margin-top: 10px;">Nenhuma música configurada ainda.</div>
+</div>
 
 <script>
     const integrantes = ["Márcia", "Isabelle", "Estefany", "Paulinho", "Fernando", "Davi", "Max"];
     const funcoes = ["Cantor(a)", "Backing-vocal", "Guitarra", "Baixo", "Bateria", "Teclado"];
-    let dadosEscala = {}; // Estrutura: { "Musica": { "Nome": "Funcao" } }
+    const musicasBase = ["Ousado Amor", "Galileu", "Vem me Buscar", "Aos Pés da Cruz", "Oceanos", "Que se Abram os Céus"];
+    
+    let dadosEscala = {};
 
-    // Gerar a tela automaticamente
+    // Inicialização
     const grid = document.getElementById('grid');
+    const datalist = document.getElementById('musicasList');
+    musicasBase.forEach(m => datalist.innerHTML += `<option value="${m}">`);
+
     integrantes.forEach(nome => {
         grid.innerHTML += `<div class="integrante-nome">${nome}</div>`;
         let htmlFuncoes = `<div class="selecao-funcao" id="funcoes-${nome}">`;
@@ -47,22 +61,37 @@
 
     function selecionar(nome, func, el) {
         const musica = document.getElementById('musicaAtual').value;
-        if(!musica) return alert("Escolha a música primeiro!");
+        if(!musica) return alert("Por favor, digite o nome da música primeiro!");
         
-        // Remove active de outros chips do mesmo integrante
         el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
 
         if(!dadosEscala[musica]) dadosEscala[musica] = {};
         dadosEscala[musica][nome] = func;
+        atualizarResumo();
     }
 
-    function salvarEEnviar() {
+    function atualizarResumo() {
+        const listaResumo = document.getElementById('listaResumo');
+        listaResumo.innerHTML = Object.keys(dadosEscala).map(m => `• ${m}`).join('<br>');
+    }
+
+    function limparTudo() {
+        if(confirm("Deseja limpar toda a escala?")) {
+            dadosEscala = {};
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            atualizarResumo();
+        }
+    }
+
+    function enviarWhatsApp() {
+        if(Object.keys(dadosEscala).length === 0) return alert("Adicione pelo menos uma música!");
+        
         let msg = `*𝄞 ESCALA RENASCER*%0A%0A`;
         for(let m in dadosEscala) {
             msg += `*${m}*%0A`;
             for(let p in dadosEscala[m]) {
-                msg += `• ${p}: ${dadosEscala[m][p]}%0A`;
+                msg += `→ ${p}: ${dadosEscala[m][p]}%0A`;
             }
             msg += `%0A`;
         }
