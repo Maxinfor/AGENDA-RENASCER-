@@ -2,27 +2,30 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escala Renascer | Pro</title>
     <style>
-        :root { --bg: #050505; --accent: #00f2ff; --border: #1a1a1a; --text: #e0e0e0; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; }
-        .card { width: 100%; max-width: 450px; background: #0d0d0d; padding: 25px; border: 1px solid var(--border); }
-        .row { margin-bottom: 15px; }
-        label { font-size: 0.65rem; color: #888; display: block; margin-bottom: 5px; }
-        input, select { width: 100%; background: #111; border: 1px solid var(--border); padding: 10px; color: #fff; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; cursor: pointer; border: none; margin-top: 5px; font-weight: 600; }
-        .btn-add { background: #222; color: white; }
+        :root { --bg: #0a0a0a; --accent: #00f2ff; --card: #141414; --text: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 15px; margin: 0; display: flex; justify-content: center; }
+        .card { width: 100%; max-width: 400px; background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; }
+        h2 { text-align: center; color: var(--accent); margin-bottom: 20px; font-size: 1.2rem; }
+        .row { margin-bottom: 12px; }
+        label { font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        input, select { width: 100%; background: #222; border: 1px solid #444; padding: 12px; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; margin-top: 8px; transition: 0.3s; }
+        .btn-add { background: #333; color: white; }
         .btn-save { background: var(--accent); color: #000; }
         .btn-wp { background: #25d366; color: white; margin-top: 20px; }
-        #listaMusicas { font-size: 0.8rem; margin: 15px 0; color: #aaa; }
-        .badge { display: inline-block; background: #333; padding: 3px 8px; margin: 2px; border-radius: 4px; cursor: pointer; color: var(--accent); }
-        .badge:hover { background: #444; text-decoration: line-through; }
+        #listaMusicas { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+        .badge { background: #2a2a2a; padding: 6px 10px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; border: 1px solid #444; }
+        .badge:hover { background: #ff4444; border-color: #ff4444; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div class="row"><label>DATA (DD/MM/AAAA)</label><input type="text" id="data" placeholder="20/06/2026"></div>
+    <h2>ESCALA RENASCER</h2>
+    <div class="row"><label>DATA</label><input type="date" id="data"></div>
     <div class="row"><label>HORÁRIO</label><input type="time" id="horario"></div>
     <div class="row"><label>INTEGRANTE</label>
         <select id="integrante">
@@ -48,21 +51,65 @@
 </div>
 
 <script>
-    const musicasRenascer = [
-        "Aos Pés da Cruz", "Oceanos", "Que se Abram os Céus", "Lugar Secreto", "Nada Mais", 
-        "Eu Te Vejo em Tudo", "Ousado Amor", "Fenda da Rocha", "Quão Grande é o Meu Deus", "Poderoso Deus",
-        "A Ele a Glória", "Atos 2", "Me Derramar", "Rei do Meu Coração", "Em Teus Braços",
-        "Perto de Ti", "Mais Perto", "Aba", "Só Tu És Santo", "Santo Espírito",
-        "Não Seria Eu", "A Casa é Sua", "Yeshua", "Teus Planos", "Tuas Águas",
-        "Seu Amor é Incrível", "Leão da Tribo de Judá", "Cadeias Quebrar", "Maravilhada Graça", "Ao Único",
-        "Eu Navegarei", "Tua Presença", "Porque Ele Vive", "Grandioso é o Teu Amor", "Isaías 9",
-        "Tudo Que Existe", "Vem me Buscar", "Filho do Deus Vivo", "Eu Me Rendo", "Espontâneo",
-        "Fogo do Céu", "Brasil", "Aleluia", "Cura-me", "Deus de Promessas",
-        "Incomparável", "Lindo És", "Transformado", "Minha Essência", "Como a Flor",
-        "Digno de Glória", "Santo", "Meu Salvador", "Tua Unção", "Renascer",
-        "Liberta-me", "Fiel", "Som da Liberdade", "Rei da Glória", "Ele Vem",
-        "Glória", "Exaltado", "Tua Graça me Basta", "O Caminho", "Verdade e Vida",
-        "Vida em Mim", "Graça", "Livre", "Viver pra Ti", "Tua Vontade",
-        "Tua Palavra", "Esperança", "A Luz do Mundo", "Sal da Terra", "Coração",
-        "Intimidade", "Profundo", "Viverei", "Chamado", "Missionário",
-        "Ide
+    const musicas = ["Aos Pés da Cruz", "Oceanos", "Que se Abram os Céus", "Lugar Secreto", "Nada Mais", "Eu Te Vejo em Tudo", "Ousado Amor", "Fenda da Rocha", "Quão Grande é o Meu Deus", "Poderoso Deus", "A Ele a Glória", "Atos 2", "Me Derramar", "Rei do Meu Coração", "Em Teus Braços", "Perto de Ti", "Mais Perto", "Aba", "Só Tu És Santo", "Santo Espírito", "Não Seria Eu", "A Casa é Sua", "Yeshua", "Teus Planos", "Tuas Águas", "Seu Amor é Incrível", "Leão da Tribo de Judá", "Cadeias Quebrar", "Maravilhada Graça", "Ao Único", "Eu Navegarei", "Tua Presença", "Porque Ele Vive", "Grandioso é o Teu Amor", "Isaías 9", "Tudo Que Existe", "Vem me Buscar", "Filho do Deus Vivo", "Eu Me Rendo", "Espontâneo", "Fogo do Céu", "Brasil", "Aleluia", "Cura-me", "Deus de Promessas", "Incomparável", "Lindo És", "Transformado", "Minha Essência", "Como a Flor", "Digno de Glória", "Santo", "Meu Salvador", "Tua Unção", "Renascer", "Liberta-me", "Fiel", "Som da Liberdade", "Rei da Glória", "Ele Vem", "Glória", "Exaltado", "Tua Graça me Basta", "O Caminho", "Verdade e Vida", "Vida em Mim", "Graça", "Livre", "Viver pra Ti", "Tua Vontade", "Tua Palavra", "Esperança", "A Luz do Mundo", "Sal da Terra", "Coração", "Intimidade", "Profundo", "Viverei", "Chamado", "Missionário", "Ide", "Restaurar", "Vidas", "Almas", "Celebração", "Vitória", "Exército de Deus", "Unidade", "Amor", "Paz", "Felicidade", "Novo Tempo", "Despertar", "Avivamento", "Glória a Deus", "Reina", "Majestade", "Poder", "Autor da Vida", "Eterno"];
+
+    let musicasSelecionadas = [];
+
+    window.onload = () => {
+        // Data automática
+        document.getElementById('data').valueAsDate = new Date();
+        // Carrega músicas
+        const sel = document.getElementById('selectMusica');
+        musicas.forEach(m => sel.innerHTML += `<option>${m}</option>`);
+        // Recupera últimos dados
+        document.getElementById('integrante').value = localStorage.getItem('lastIntegrante') || 'Márcia';
+        document.getElementById('funcao').value = localStorage.getItem('lastFuncao') || 'Cantora';
+    };
+
+    function addMusica() {
+        const m = document.getElementById('selectMusica').value;
+        if(!musicasSelecionadas.includes(m)) {
+            musicasSelecionadas.push(m);
+            renderizar();
+        }
+    }
+
+    function renderizar() {
+        const div = document.getElementById('listaMusicas');
+        div.innerHTML = "";
+        musicasSelecionadas.forEach((m, i) => {
+            div.innerHTML += `<span class="badge" onclick="remover(${i})">${m} ✕</span>`;
+        });
+    }
+
+    function remover(i) {
+        musicasSelecionadas.splice(i, 1);
+        renderizar();
+    }
+
+    function salvarEscala() {
+        const i = document.getElementById('integrante').value;
+        const f = document.getElementById('funcao').value;
+        localStorage.setItem('lastIntegrante', i);
+        localStorage.setItem('lastFuncao', f);
+        
+        const escala = {
+            data: document.getElementById('data').value,
+            horario: document.getElementById('horario').value,
+            integrante: i,
+            funcao: f,
+            musicas: musicasSelecionadas
+        };
+        localStorage.setItem('escalaAtual', JSON.stringify(escala));
+        alert("Escala salva!");
+    }
+
+    function enviarWhatsApp() {
+        const e = JSON.parse(localStorage.getItem('escalaAtual'));
+        if(!e) return alert("Salve antes de enviar!");
+        const texto = `*ESCALA RENASCER*%0AData: ${e.data}%0AHora: ${e.horario}%0AIntegrante: ${e.integrante}%0AFunção: ${e.funcao}%0AMúsicas: ${e.musicas.join(', ')}`;
+        window.open(`https://wa.me/?text=${texto}`, '_blank');
+    }
+</script>
+</body>
+</html>
